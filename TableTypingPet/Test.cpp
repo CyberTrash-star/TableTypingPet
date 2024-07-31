@@ -1,19 +1,250 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include <stdio.h>
+#include <Windows.h>
 
-int main(int argc, char* argv[])
+HHOOK hKeyHook;
+bool Act = true;
+bool isQKeyPressed = false; // 标记键盘是否被按下
+bool isWKeyPressed = false;
+bool isEKeyPressed = false;
+bool isRKeyPressed = false;
+bool isTKeyPressed = false;
+bool isAKeyPressed = false;
+bool isSKeyPressed = false;
+bool isDKeyPressed = false;
+bool isFKeyPressed = false;
+bool isGKeyPressed = false;
+bool isZKeyPressed = false;
+bool isXKeyPressed = false;
+bool isCKeyPressed = false;
+bool isVKeyPressed = false;
+bool isYKeyPressed = false;
+bool isUKeyPressed = false;
+bool isIKeyPressed = false;
+bool isOKeyPressed = false;
+bool isPKeyPressed = false;
+bool isHKeyPressed = false;
+bool isJKeyPressed = false;
+bool isKKeyPressed = false;
+bool isLKeyPressed = false;
+bool isBKeyPressed = false;
+bool isNKeyPressed = false;
+bool isMKeyPressed = false;
+
+LRESULT CALLBACK KeyProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
+    if (nCode >= 0)
+    {
+        KBDLLHOOKSTRUCT* pKeyboard = (KBDLLHOOKSTRUCT*)lParam;
 
-    // 初始化sdl
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+        if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN)
+        {
+            if (Act)
+            {
+                switch (pKeyboard->vkCode)
+                {
+                case 0x57:
+                    isWKeyPressed = true;
+                    break;
+                case 0x51:
+                    isQKeyPressed = true;
+                    break;
+                case 0x45:
+                    isEKeyPressed = true;
+                    break;
+                case 0x52:
+                    isRKeyPressed = true;
+                    break;
+                case 0x54:
+                    isTKeyPressed = true;
+                    break;
+                case 0x41:
+                    isAKeyPressed = true;
+                    break;
+                case 0x53:
+                    isSKeyPressed = true;
+                    break;
+                case 0x44:
+                    isDKeyPressed = true;
+                    break;
+                case 0x46:
+                    isFKeyPressed = true;
+                    break;
+                case 0x47:
+                    isGKeyPressed = true;
+                    break;
+                case 0x5A:
+                    isAKeyPressed = true;
+                    break;
+                case 0x58:
+                    isXKeyPressed = true;
+                    break;
+                case 0x43:
+                    isCKeyPressed = true;
+                    break;
+                case 0x56:
+                    isVKeyPressed = true;
+                    break;
+
+
+                case 0x59:
+                    isYKeyPressed = true;
+                    break;
+                case 0x55:
+                    isUKeyPressed = true;
+                    break;
+                case 0x49:
+                    isIKeyPressed = true;
+                    break;
+                case 0x4F:
+                    isOKeyPressed = true;
+                    break;
+                case 0x50:
+                    isPKeyPressed = true;
+                    break;
+                case 0x48:
+                    isHKeyPressed = true;
+                    break;
+                case 0x4A:
+                    isJKeyPressed = true;
+                    break;
+                case 0x4B:
+                    isKKeyPressed = true;
+                    break;
+                case 0x4C:
+                    isLKeyPressed = true;
+                    break;
+                case 0x42:
+                    isBKeyPressed = true;
+                    break;
+                case 0x4E:
+                    isNKeyPressed = true;
+                    break;
+                case 0x4D:
+                    isMKeyPressed = true;
+                    break;
+                }
+            }
+        }
+        else if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP)
+        {
+            switch (pKeyboard->vkCode)
+            {
+            case 0x57:
+                isWKeyPressed = false;
+                break;
+            case 0x51:
+                isQKeyPressed = false;
+                break;
+            case 0x45:
+                isEKeyPressed = false;
+                break;
+            case 0x52:
+                isRKeyPressed = false;
+                break;
+            case 0x54:
+                isTKeyPressed = false;
+                break;
+            case 0x41:
+                isAKeyPressed = false;
+                break;
+            case 0x53:
+                isSKeyPressed = false;
+                break;
+            case 0x44:
+                isDKeyPressed = false;
+                break;
+            case 0x46:
+                isFKeyPressed = false;
+                break;
+            case 0x47:
+                isGKeyPressed = false;
+                break;
+            case 0x5A:
+                isAKeyPressed = false;
+                break;
+            case 0x58:
+                isXKeyPressed = false;
+                break;
+            case 0x43:
+                isCKeyPressed = false;
+                break;
+            case 0x56:
+                isVKeyPressed = false;
+                break;
+
+
+            case 0x59:
+                isYKeyPressed = false;
+                break;
+            case 0x55:
+                isUKeyPressed = false;
+                break;
+            case 0x49:
+                isIKeyPressed = false;
+                break;
+            case 0x4F:
+                isOKeyPressed = false;
+                break;
+            case 0x50:
+                isPKeyPressed = false;
+                break;
+            case 0x48:
+                isHKeyPressed = false;
+                break;
+            case 0x4A:
+                isJKeyPressed = false;
+                break;
+            case 0x4B:
+                isKKeyPressed = false;
+                break;
+            case 0x4C:
+                isLKeyPressed = false;
+                break;
+            case 0x42:
+                isBKeyPressed = false;
+                break;
+            case 0x4E:
+                isNKeyPressed = false;
+                break;
+            case 0x4D:
+                isMKeyPressed = false;
+                break;
+            }
+        }
+    }
+    return CallNextHookEx(hKeyHook, nCode, wParam, lParam);
+}
+
+void InstallHook()
+{
+    hKeyHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyProc, GetModuleHandle(NULL), 0);
+    if (hKeyHook == NULL)
+    {
+        printf("Failed to install hook!\n");
+    }
+}
+
+void RemoveHook() 
+{
+    if (hKeyHook != NULL) 
+    {
+        UnhookWindowsHookEx(hKeyHook);
+    }
+}
+
+int main(int argc, char* argv[]) 
+{
+    // sdl初始化
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) 
     {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return -1;
     }
 
-    // 初始化sdl image
-    if (IMG_Init(IMG_INIT_PNG) == 0)
+    // sdl image初始化
+    if (IMG_Init(IMG_INIT_PNG) == 0) 
     {
         printf("SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
         return -1;
@@ -21,7 +252,7 @@ int main(int argc, char* argv[])
 
     // 获取屏幕尺寸
     SDL_DisplayMode DM;
-    if (SDL_GetCurrentDisplayMode(0, &DM) != 0)
+    if (SDL_GetCurrentDisplayMode(0, &DM) != 0) 
     {
         printf("SDL_GetCurrentDisplayMode failed! SDL_Error: %s\n", SDL_GetError());
         return -1;
@@ -34,13 +265,13 @@ int main(int argc, char* argv[])
     int windowWidth = 230;
     int windowHeight = 200;
 
-    // 计算右下角位置
+    // 计算屏幕右下角位置
     int windowI = width - windowWidth - 50;
     int windowJ = height - windowHeight - 100;
 
-    //创建窗口
-    SDL_Window* window = SDL_CreateWindow("SDL Image Example", windowI, windowJ, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS);
-    if (window == nullptr)
+    // 创建显示窗口
+    SDL_Window* window = SDL_CreateWindow("SDL Image Example", windowI, windowJ, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS | SDL_WINDOW_INPUT_FOCUS);
+    if (window == nullptr) 
     {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         return -1;
@@ -48,147 +279,107 @@ int main(int argc, char* argv[])
 
     // 创建渲染器
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == nullptr)
+    if (renderer == nullptr) 
     {
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
         return -1;
     }
 
-    //加载图像
-    SDL_Surface* surface = IMG_Load(R"(C:\\Users\\32331\\Desktop\\ori.png)");
-    if (surface == nullptr)
+    // 加载初始图形
+    SDL_Surface* surface = IMG_Load(R"(C:\Users\32331\Desktop\ori.png)");
+    if (surface == nullptr) 
     {
         printf("Unable to load image! SDL_image Error: %s\n", IMG_GetError());
         return -1;
     }
 
-    // 转换为纹理并且渲染
+    // 创建纹理 绘制
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
-    if (texture == nullptr)
+    if (texture == nullptr) 
     {
         printf("Unable to create texture! SDL Error: %s\n", SDL_GetError());
         return -1;
     }
 
-    // 定义图像位置和大小
-    SDL_Rect imageRect = { 100, 100, surface->w, surface->h };
-
-    //加载左手图像
+    // 加载左手图形
     SDL_Surface* surfaceLeft = IMG_Load(R"(C:\Users\32331\Desktop\Left.png)");
-    if (surfaceLeft == nullptr)
+    if (surfaceLeft == nullptr) 
     {
         printf("Unable to load left hand image! SDL_image Error: %s\n", IMG_GetError());
         return -1;
     }
 
-    // 转换为纹理并且渲染
+    // 创建纹理 绘制
     SDL_Texture* textureLeft = SDL_CreateTextureFromSurface(renderer, surfaceLeft);
     SDL_FreeSurface(surfaceLeft);
-    if (textureLeft == nullptr)
+    if (textureLeft == nullptr) 
     {
         printf("Unable to create texture! SDL Error: %s\n", SDL_GetError());
         return -1;
     }
 
-    //加载右手图像
+    // 加载右手图形
     SDL_Surface* surfaceRight = IMG_Load(R"(C:\Users\32331\Desktop\Right.png)");
-    if (surfaceRight == nullptr)
+    if (surfaceRight == nullptr) 
     {
         printf("Unable to load right hand image! SDL_image Error: %s\n", IMG_GetError());
         return -1;
     }
 
-    // 转换为纹理并且渲染
+    // 创建纹理 绘制
     SDL_Texture* textureRight = SDL_CreateTextureFromSurface(renderer, surfaceRight);
     SDL_FreeSurface(surfaceRight);
-    if (textureRight == nullptr)
+    if (textureRight == nullptr) 
     {
         printf("Unable to create texture! SDL Error: %s\n", SDL_GetError());
         return -1;
     }
 
-    // 渲染图形
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
+    // 加载键盘钩子
+    InstallHook();
 
-    // 设置键盘集合
-    const Uint8* LKeySates = SDL_GetKeyboardState(NULL);
-    const Uint8* RKeySates = SDL_GetKeyboardState(NULL);
-    const SDL_Scancode Lkeys[] = { SDL_SCANCODE_Q, SDL_SCANCODE_W, SDL_SCANCODE_E, SDL_SCANCODE_R,
-                                   SDL_SCANCODE_A, SDL_SCANCODE_S, SDL_SCANCODE_D, SDL_SCANCODE_F,
-                                   SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V,
-                                   SDL_SCANCODE_T, SDL_SCANCODE_G, SDL_SCANCODE_B };
-    const SDL_Scancode Rkeys[] = { SDL_SCANCODE_Y, SDL_SCANCODE_U, SDL_SCANCODE_I, SDL_SCANCODE_O,
-                                   SDL_SCANCODE_P, SDL_SCANCODE_H, SDL_SCANCODE_J, SDL_SCANCODE_K,
-                                   SDL_SCANCODE_L, SDL_SCANCODE_B, SDL_SCANCODE_N, SDL_SCANCODE_M };
-    int LKeySetSize = sizeof(Lkeys) / sizeof(Lkeys[0]);
-    int RKeySetSize = sizeof(Rkeys) / sizeof(Lkeys[0]);
-
-    // 添加事件监听
     SDL_Event event;
     bool loop = true;
-    bool Act = true;
-    while (loop)
+
+    // 窗口循环
+    while (loop) 
     {
-        while (SDL_PollEvent(&event))
+        while (SDL_PollEvent(&event)) 
         {
-            switch (event.type)
+            if (event.type == SDL_QUIT) 
             {
-
-            case SDL_QUIT:
                 loop = false;
-                break;
-
-            case SDL_KEYDOWN:
-                if (Act)
-                {
-                    for (int i = 0; i < LKeySetSize; i++)
-                    {
-                        if (event.key.keysym.scancode == Lkeys[i])
-                        {
-                            SDL_RenderClear(renderer);
-                            SDL_RenderCopy(renderer, textureLeft, NULL, NULL);
-                            SDL_RenderPresent(renderer);
-                        }
-                    }
-                    for (int j = 0; j < RKeySetSize; j++)
-                    {
-                        if (event.key.keysym.scancode == Rkeys[j])
-                        {
-                            SDL_RenderClear(renderer);
-                            SDL_RenderCopy(renderer, textureRight, NULL, NULL);
-                            SDL_RenderPresent(renderer);
-                        }
-                    }
-                }
-                break;
-
-            // 添加焦点判断 
-            case SDL_WINDOWEVENT:
-                if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
-                {
-                    Act = true;
-                }
-                else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
-                {
-                    Act = true;
-                }
-                break;
-
-            case SDL_KEYUP:
-                if (Act)
-                {
-                    SDL_RenderClear(renderer);
-                    SDL_RenderCopy(renderer, texture, NULL, NULL);
-                    SDL_RenderPresent(renderer);
-                }
             }
+        }
+
+        // 根据键盘状态更新渲染
+        SDL_RenderClear(renderer);
+        if (isQKeyPressed || isWKeyPressed || isEKeyPressed || isRKeyPressed || isTKeyPressed || isAKeyPressed || isSKeyPressed || isDKeyPressed || isFKeyPressed || isGKeyPressed || isZKeyPressed || isXKeyPressed || isCKeyPressed || isVKeyPressed)
+        {
+            SDL_RenderCopy(renderer, textureLeft, NULL, NULL);
+        }
+        else if (isYKeyPressed || isUKeyPressed || isIKeyPressed || isOKeyPressed || isPKeyPressed || isHKeyPressed || isJKeyPressed || isKKeyPressed || isLKeyPressed || isBKeyPressed || isNKeyPressed || isMKeyPressed)
+        {
+            SDL_RenderCopy(renderer, textureRight, NULL, NULL);
+        }
+        else 
+        {
+            SDL_RenderCopy(renderer, texture, NULL, NULL);
+        }
+        SDL_RenderPresent(renderer);
+
+        // 处理
+        MSG msg;
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
         }
     }
 
-    // 释放内存
+    RemoveHook();
+
+    // 释放资源
     SDL_DestroyTexture(texture);
     SDL_DestroyTexture(textureLeft);
     SDL_DestroyTexture(textureRight);
