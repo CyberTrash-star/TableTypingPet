@@ -19,8 +19,27 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    // 获取屏幕尺寸
+    SDL_DisplayMode DM;
+    if (SDL_GetCurrentDisplayMode(0, &DM) != 0)
+    {
+        printf("SDL_GetCurrentDisplayMode failed! SDL_Error: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    int width = DM.w;
+    int height = DM.h;
+
+    // 设置窗口大小
+    int windowWidth = 230;
+    int windowHeight = 200;
+
+    // 计算右下角位置
+    int windowI = width - windowWidth - 50;
+    int windowJ = height - windowHeight - 100;
+
     //创建窗口
-    SDL_Window* window = SDL_CreateWindow("SDL Image Example", 1960, 960, 550, 360, SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS);
+    SDL_Window* window = SDL_CreateWindow("SDL Image Example", windowI, windowJ, windowWidth, windowHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS);
     if (window == nullptr)
     {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -110,41 +129,61 @@ int main(int argc, char* argv[])
     // 添加事件监听
     SDL_Event event;
     bool loop = true;
-    bool dragging = false;
-    int setX = 0, setY = 0;
+    bool Act = true;
     while (loop)
     {
         while (SDL_PollEvent(&event))
         {
             switch (event.type)
             {
+
             case SDL_QUIT:
                 loop = false;
                 break;
+
             case SDL_KEYDOWN:
-                for (int i = 0; i < LKeySetSize; i++)
+                if (Act)
                 {
-                    if (event.key.keysym.scancode == Lkeys[i])
+                    for (int i = 0; i < LKeySetSize; i++)
                     {
-                        SDL_RenderClear(renderer);
-                        SDL_RenderCopy(renderer, textureLeft, NULL, NULL);
-                        SDL_RenderPresent(renderer);
+                        if (event.key.keysym.scancode == Lkeys[i])
+                        {
+                            SDL_RenderClear(renderer);
+                            SDL_RenderCopy(renderer, textureLeft, NULL, NULL);
+                            SDL_RenderPresent(renderer);
+                        }
                     }
-                }
-                for (int j = 0; j < RKeySetSize; j++)
-                {
-                    if (event.key.keysym.scancode == Rkeys[j])
+                    for (int j = 0; j < RKeySetSize; j++)
                     {
-                        SDL_RenderClear(renderer);
-                        SDL_RenderCopy(renderer, textureRight, NULL, NULL);
-                        SDL_RenderPresent(renderer);
+                        if (event.key.keysym.scancode == Rkeys[j])
+                        {
+                            SDL_RenderClear(renderer);
+                            SDL_RenderCopy(renderer, textureRight, NULL, NULL);
+                            SDL_RenderPresent(renderer);
+                        }
                     }
                 }
                 break;
+
+            // 添加焦点判断 
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+                {
+                    Act = true;
+                }
+                else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+                {
+                    Act = true;
+                }
+                break;
+
             case SDL_KEYUP:
-                SDL_RenderClear(renderer);
-                SDL_RenderCopy(renderer, texture, NULL, NULL);
-                SDL_RenderPresent(renderer);
+                if (Act)
+                {
+                    SDL_RenderClear(renderer);
+                    SDL_RenderCopy(renderer, texture, NULL, NULL);
+                    SDL_RenderPresent(renderer);
+                }
             }
         }
     }
